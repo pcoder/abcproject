@@ -12,18 +12,16 @@ class ExampleApplication
     public:
         void init( Os::AppMainParameter& value )
         {
-            radio_ = &wiselib::FacetProvider<Os, Os::Radio>::get_facet( value );
-            timer_ = &wiselib::FacetProvider<Os, Os::Timer>::get_facet( value );
-            debug_ = &wiselib::FacetProvider<Os, Os::Debug>::get_facet( value );
+            radio_ = &wiselib::FacetProvider::get_facet( value );
+            timer_ = &wiselib::FacetProvider::get_facet( value );
+            debug_ = &wiselib::FacetProvider::get_facet( value );
 
             radio_->enable_radio();
 
             debug_->debug( "Hello World from Example Application!\n" );
 
-            radio_->reg_recv_callback<ExampleApplication,
-            &ExampleApplication::receive_radio_message>( this );
-            timer_->set_timer<ExampleApplication,
-            &ExampleApplication::start>( 5000, this, 0 );
+            radio_->reg_recv_callback( this );
+            timer_->set_timer( 5000, this, 0 );
         }
         // --------------------------------------------------------------------
         void start( void* )
@@ -33,8 +31,7 @@ class ExampleApplication
             radio_->send( Os::Radio::BROADCAST_ADDRESS, sizeof(message), message );
 
             // following can be used for periodic messages to sink
-            timer_->set_timer<ExampleApplication,
-            &ExampleApplication::start>( 5000, this, 0 );
+            timer_->set_timer( 5000, this, 0 );
         }
 
         // --------------------------------------------------------------------
@@ -51,7 +48,7 @@ class ExampleApplication
 };
 
 // --------------------------------------------------------------------------
-wiselib::WiselibApplication<Os, ExampleApplication> example_app;
+wiselib::WiselibApplication example_app;
 // --------------------------------------------------------------------------
 
 void application_main( Os::AppMainParameter& value )
